@@ -25,6 +25,8 @@ SCRIPT_PID=$$
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 SAVE_DIR="${SAVE_PATH}/${EXP_NAME}/${TIMESTAMP}"
 
+mkdir -p "${SAVE_DIR}"
+
 # Stop any existing ray processes
 ray stop
 
@@ -72,7 +74,7 @@ ray job submit --address="http://127.0.0.1:8265" \
     actor_rollout_ref.rollout.top_k=-1 \
     actor_rollout_ref.rollout.val_kwargs.temperature=1.0 \
     actor_rollout_ref.rollout.val_kwargs.top_p=0.7 \
-    actor_rollout_ref.rollout.val_kwargs.top_k=1.0 \
+    actor_rollout_ref.rollout.val_kwargs.top_k=-1 \
     actor_rollout_ref.rollout.val_kwargs.do_sample=True \
     actor_rollout_ref.rollout.val_kwargs.n=1 \
     actor_rollout_ref.actor.use_kl_loss=False \

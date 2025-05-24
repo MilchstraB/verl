@@ -75,6 +75,10 @@ def load_reward_manager(config, tokenizer, num_examine, **reward_kwargs):
         from verl.workers.reward_manager import DAPORewardManager
 
         reward_manager_cls = DAPORewardManager
+    elif reward_manager_name == "remote":
+        from verl.workers.reward_manager import RemoteRewardManager
+
+        reward_manager_cls = RemoteRewardManager
     else:
         raise NotImplementedError
 
