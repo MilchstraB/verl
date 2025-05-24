@@ -102,10 +102,10 @@ class RemoteRewardManager:
                 extra_info=input_item.extra_info,
                 data_source=input_item.data_source,
             )
-            return CallScoreFuncOutput(score=score, detail=detail)
+            return CallScoreFuncOutput(score=score, reward_extra_info=detail)
         except Exception as e:
             print(f"Error computing score: {str(e)}")
-            return CallScoreFuncOutput(score=0.0, detail={})
+            return CallScoreFuncOutput(score=0.0, reward_extra_info={})
 
     async def batch_compute_scores(
         self, input_list: List[CallScoreFuncInput], max_concurrency: int = 30
