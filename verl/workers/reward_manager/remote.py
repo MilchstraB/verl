@@ -89,6 +89,24 @@ class RemoteRewardManager:
         self.compute_score = compute_score or call_online_reward_model
         self.reward_fn_key = reward_fn_key
 
+    async def async_compute_score(
+        self, input_item: CallScoreFuncInput
+    ) -> CallScoreFuncOutput:
+        """Compute the score for a single input item."""
+        try:
+            score, detail = await async_call_online_reward_model(
+                url=self.reward_api,
+                response=input_item.response,
+                prompt=input_item.prompt,
+                ground_truth=input_item.ground_truth,
+                extra_info=input_item.extra_info,
+                data_source=input_item.data_source,
+            )
+            return CallScoreFuncOutput(score=score, detail=detail)
+        except Exception as e:
+            print(f"Error computing score: {str(e)}")
+            return CallScoreFuncOutput(score=0.0, detail={})
+
     async def batch_compute_scores(
         self, input_list: List[CallScoreFuncInput], max_concurrency: int = 30
     ) -> List[CallScoreFuncOutput]:
