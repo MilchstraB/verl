@@ -676,6 +676,8 @@ class RayPPOTrainer:
                     pfx = f"{metric_sec}/{data_source}/{var_name}/{metric_name}"
                     metric_dict[pfx] = metric_val
 
+        metric_dict["reward/val_mean"] = np.mean(sample_scores)
+
         return metric_dict
 
     def init_workers(self):
@@ -1074,6 +1076,8 @@ class RayPPOTrainer:
                     }
                 )
                 # collect metrics
+                train_reward = batch.batch["token_level_rewards"].sum(-1).cpu().tolist()
+                metrics.update({"reward/train_mean": np.mean(train_reward)})
                 metrics.update(compute_data_metrics(batch=batch, use_critic=self.use_critic))
                 metrics.update(compute_timing_metrics(batch=batch, timing_raw=timing_raw))
                 # TODO: implement actual tflpo and theoretical tflpo

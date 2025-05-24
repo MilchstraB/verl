@@ -112,8 +112,6 @@ class RemoteRewardManager:
                 return data.batch["rm_scores"]
 
         reward_tensor = torch.zeros_like(data.batch["responses"], dtype=torch.float32)
-
-        already_print_data_sources = {}
         scorefuncinput_list: List[CallScoreFuncInput] = []
 
         for i in range(len(data)):
