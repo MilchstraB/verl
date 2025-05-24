@@ -62,10 +62,10 @@ def call_online_reward_model(url: str, **kwargs):
     try:
         # Use the async function in a synchronous context
         loop = asyncio.get_event_loop()
-        score, details = loop.run_until_complete(
+        score, reward_extra_info = loop.run_until_complete(
             async_call_online_reward_model(url, **kwargs)
         )
-        return score, details
+        return score, reward_extra_info
     except Exception as e:
         return 0.0, {}
 
@@ -94,7 +94,7 @@ class RemoteRewardManager:
     ) -> CallScoreFuncOutput:
         """Compute the score for a single input item."""
         try:
-            score, detail = await async_call_online_reward_model(
+            score, reward_extra_info = await async_call_online_reward_model(
                 url=self.reward_api,
                 response=input_item.response,
                 prompt=input_item.prompt,
@@ -102,7 +102,7 @@ class RemoteRewardManager:
                 extra_info=input_item.extra_info,
                 data_source=input_item.data_source,
             )
-            return CallScoreFuncOutput(score=score, reward_extra_info=detail)
+            return CallScoreFuncOutput(score=score, reward_extra_info=reward_extra_info)
         except Exception as e:
             print(f"Error computing score: {str(e)}")
             return CallScoreFuncOutput(score=0.0, reward_extra_info={})
