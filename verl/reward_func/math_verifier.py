@@ -144,6 +144,11 @@ if __name__ == "__main__":
     print(f"Format reward is {'disabled' if args.disable_format_reward else 'enabled'}")
     logger.info(f"Format reward is {'disabled' if args.disable_format_reward else 'enabled'}")
 
+    logger.warning(
+        "Math-verify is thread-unsafe! Please refer to "
+        "https://github.com/huggingface/Math-Verify/issues/50#issuecomment-2835692251 for more details."
+    )
+
     format_pattern = r"^<think>(?:(?!</think>).)*</think><answer>(?:(?!</answer>).)*</answer>\Z"
 
     if args.prompt_template == "chatml":
