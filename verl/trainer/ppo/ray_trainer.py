@@ -678,7 +678,8 @@ class RayPPOTrainer:
 
         metric_dict["reward/val_mean"] = np.mean(sample_scores)
         for key, val in reward_extra_infos_dict.items():
-            if "reward" in key:
+            # There is a "reward" in the reward_extra_info dict
+            if "reward" in key and key != "reward": 
                 metric_dict[f"reward/val_{key}"] = np.mean(val)
 
         return metric_dict
