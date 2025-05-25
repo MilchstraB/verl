@@ -114,19 +114,12 @@ def compute_score(
     format_reward = 0.0
     if enable_format_reward:
         format_reward = float(verify_format(solution_str)) * 0.5
-    reward = verify_math(solution_str, ground_truth)
+    acc_reward = verify_math(solution_str, ground_truth)
 
-    # do_print = random.randint(1, 20) == 1
-    # if do_print:
-    #     info = f"Query: {q}\n\nProblem: {problem}\n\n Answer: {answer}\n\n Response: {response}\n\n Format Reward: {format_reward}\n\n Acc Reward: {acc_reward_future.result()}\n\n"
-    #     info = re.sub(r"<\|.*?\|>|<pad>", "", info)
-    #     logger.info(info)
-
-    reward = format_reward + reward
+    reward = format_reward + acc_reward
 
     return {
         "score": reward,
+        "acc_reward": acc_reward,
         "format_reward": format_reward,
-        "acc": reward == 1.0,
-        "pred": solution_str,
     }

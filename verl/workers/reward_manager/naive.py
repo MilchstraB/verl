@@ -90,9 +90,10 @@ class NaiveRewardManager:
 
             if already_print_data_sources[data_source] < self.num_examine:
                 already_print_data_sources[data_source] += 1
-                print("[prompt]", prompt_str)
-                print("[response]", response_str)
-                print("[ground_truth]", ground_truth)
+                info = (
+                    f"Prompt: {prompt_str}\n\n Ground Truth: {ground_truth}\n\n Response: {response_str}\n\n"
+                )
+                print(repr(info))
                 if isinstance(score, dict):
                     for key, value in score.items():
                         print(f"[{key}]", value)
