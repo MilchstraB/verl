@@ -1,23 +1,9 @@
 import re
-try:
-    from latex2sympy2_extended import NormalizationConfig
-    from math_verify import LatexExtractionConfig, parse, verify
-except ImportError:
-    print("To use R1-Verify, please install it first by running `pip install math-verify latex2sympy2_extended`.")
+from latex2sympy2_extended import NormalizationConfig
+from math_verify import LatexExtractionConfig, parse, verify
 
 
 format_pattern = r"^<think>(?:(?!</think>).)*</think><answer>(?:(?!</answer>).)*</answer>\Z"
-
-
-def get_response_from_query(q: str, response_prefix: str):
-    ends_of_sentence = ["<|im_end|>", "<｜end▁of▁sentence｜>", "<|endoftext|>", "<end_of_turn>"]
-    pos = re.search(response_prefix, q)
-    if pos is None:
-        return None
-    response = q[pos.end() :]
-    for e in ends_of_sentence:
-        response = response.replace(e, "")
-    return response.strip()
 
 
 def verify_format(content):
@@ -59,11 +45,10 @@ def verify_math(content, sol):
             extraction_mode="first_match",
         )
         # Reward 1 if the content is the same as the ground truth, 0 otherwise
-        try:
-            reward = float(verify(answer_parsed, gold_parsed))
-        except Exception as e:
-            reward = 0.0
-            print("Failed to verify: ", e)
+        # We need to modify code here to print debug information if verification fails
+        # https://github.com/huggingface/Math-Verify/blob/6f5218c822fb2ed2d3618d6eda501295069b4061/src/math_verify/grader.py#L836
+        reward = float(verify(answer_parsed, gold_parsed))
+  
     else:
         # If the gold solution is not parseable, we reward 1 to skip this example
         reward = 1.0
@@ -89,25 +74,9 @@ def compute_score(
     Returns:
         Reward score (1.0 for correct, 0.0 for incorrect)
     """
-    if prompt_template == "chatml":
-        response_prefix = r"<\|im_start\|>assistant\n"
-    elif prompt_template == "qwen1":
-        response_prefix = r"<｜Assistant｜>"
-    elif prompt_template == "base":
-        response_prefix = r"Assistant: "
-    elif prompt_template == "phi3":
-        response_prefix = r"<|assistant|>\n"
-    elif prompt_template == "phi4":
-        response_prefix = r"<|assistant|>\n"
-    elif prompt_template == "gemma3":
-        response_prefix = r"<start_of_turn>model\n"
-    else:
-        raise ValueError(f"Unknown chat format: {prompt_template}")
-    
     if not ground_truth.startswith("$"):
         ground_truth = "$" + ground_truth + "$"
     
-    solution_str = get_response_from_query(solution_str, response_prefix) or solution_str
     if not solution_str:
         return 0.0
     

@@ -662,7 +662,7 @@ class RayPPOTrainer:
 
         data_sources = np.concatenate(data_source_lst, axis=0)
 
-        data_src2var2metric2val = process_validation_metrics(data_sources, sample_inputs, reward_extra_infos_dict)
+        data_src2var2metric2val = process_validation_metrics(data_sources, sample_inputs, {})
         metric_dict = {}
         for data_source, var2metric2val in data_src2var2metric2val.items():
             core_var = "acc" if "acc" in var2metric2val else "reward"
@@ -676,10 +676,8 @@ class RayPPOTrainer:
                     pfx = f"{metric_sec}/{data_source}/{var_name}/{metric_name}"
                     metric_dict[pfx] = metric_val
 
-        metric_dict["reward/val_mean"] = np.mean(sample_scores)
         for key, val in reward_extra_infos_dict.items():
-            # There is a "reward" in the reward_extra_info dict
-            if "reward" in key and key != "reward": 
+            if "reward" in key: 
                 metric_dict[f"reward/val_{key}"] = np.mean(val)
 
         return metric_dict
@@ -1082,7 +1080,7 @@ class RayPPOTrainer:
                 
                 # collect metrics
                 train_reward = reward_tensor.sum(-1).cpu().tolist()
-                metrics.update({"reward/train_mean": np.mean(train_reward)})
+                metrics.update({"reward/train_reward": np.mean(train_reward)})
                 for key, val in reward_extra_infos_dict.items():
                     if "reward" in key:
                         metrics[f"reward/train_{key}"] = np.mean(val)
